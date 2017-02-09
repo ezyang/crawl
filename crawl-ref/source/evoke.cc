@@ -543,7 +543,7 @@ void zap_wand(int slot)
     you.turn_is_over = true;
 }
 
-int recharge_wand(bool known, const string &pre_msg, int num, int den)
+int recharge_item(bool known, const string &pre_msg, int num, int den)
 {
     int item_slot = -1;
     bool divine = num >= 0 && den >= 0;

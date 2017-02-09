@@ -3045,7 +3045,7 @@ void read_scroll(item_def& scroll)
             mpr("It is a scroll of recharging.");
             // included in default force_more_message (to show it before menu)
         }
-        cancel_scroll = (recharge_wand(alreadyknown, pre_succ_msg) == -1);
+        cancel_scroll = (recharge_item(alreadyknown, pre_succ_msg) == -1);
         break;
 
     case SCR_ENCHANT_ARMOUR:

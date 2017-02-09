@@ -2959,7 +2959,7 @@ static spret_type _do_ability(const ability_def& abil, bool fail)
             stepdown(random2avg(you.skill(SK_EVOCATIONS, 10), 2) * mp_to_use,
                      den / 3);
 
-        if (recharge_wand(true, "", num, den) <= 0)
+        if (recharge_item(true, "", num, den) <= 0)
         {
             canned_msg(MSG_OK);
             return SPRET_ABORT;
