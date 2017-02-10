@@ -576,9 +576,9 @@ int recharge_item(bool known, const string &pre_msg, int num, int den)
             }
         }
 
-        item_def &wand = you.inv[ item_slot ];
+        item_def &item_to_charge = you.inv[ item_slot ];
 
-        if (!item_is_rechargeable(wand, known))
+        if (!item_is_rechargeable(item_to_charge, known))
         {
             mpr("Choose an item to recharge, or Esc to abort.");
             more();
@@ -588,45 +588,60 @@ int recharge_item(bool known, const string &pre_msg, int num, int den)
             continue;
         }
 
-        int charge_gain = wand_max_charges(wand) / 3;
-
-        const int new_charges =
-            divine
-            ? min<int>(charge_gain * 3,
-                       max<int>(wand.charges + 1,
-                                wand.charges + 3 * charge_gain * num / den))
-            : max<int>(wand.charges,
-                       min(charge_gain * 3,
-                           wand.charges +
-                           1 + random2avg(((charge_gain - 1) * 3) + 1, 3)));
-
-        const bool charged = (new_charges > wand.plus);
-
-        string desc;
-
-        if (charged && item_ident(wand, ISFLAG_KNOW_PLUSES))
+        // Wands gain a number of charges.
+        if (item_to_charge.base_type == OBJ_WANDS)
         {
-            desc = make_stringf(" and now has %d charge%s",
-                                new_charges, new_charges == 1 ? "" : "s");
+            int charge_gain = wand_max_charges(item_to_charge) / 3;
+
+            const int new_charges =
+                divine
+                ? min<int>(charge_gain * 3,
+                           max<int>(item_to_charge.charges + 1,
+                                    item_to_charge.charges + 3 * charge_gain * num / den))
+                : max<int>(item_to_charge.charges,
+                           min(charge_gain * 3,
+                               item_to_charge.charges +
+                               1 + random2avg(((charge_gain - 1) * 3) + 1, 3)));
+
+            const bool charged = (new_charges > item_to_charge.plus);
+
+            string desc;
+
+            if (charged && item_ident(item_to_charge, ISFLAG_KNOW_PLUSES))
+            {
+                desc = make_stringf(" and now has %d charge%s",
+                                    new_charges, new_charges == 1 ? "" : "s");
+            }
+
+            if (known && !pre_msg.empty())
+                mpr(pre_msg);
+
+            mprf("%s %s for a moment%s.",
+                 item_to_charge.name(DESC_YOUR).c_str(),
+                 charged ? "glows" : "flickers",
+                 desc.c_str());
+
+            if (!charged && !item_ident(item_to_charge, ISFLAG_KNOW_PLUSES))
+            {
+                mprf("It has %d charges and is fully charged.", new_charges);
+                set_ident_flags(item_to_charge, ISFLAG_KNOW_PLUSES);
+            }
+
+            // Reinitialise zap counts.
+            item_to_charge.charges  = new_charges;
+            item_to_charge.used_count = ZAPCOUNT_RECHARGED;
         }
-
-        if (known && !pre_msg.empty())
-            mpr(pre_msg);
-
-        mprf("%s %s for a moment%s.",
-             wand.name(DESC_YOUR).c_str(),
-             charged ? "glows" : "flickers",
-             desc.c_str());
-
-        if (!charged && !item_ident(wand, ISFLAG_KNOW_PLUSES))
+        // XP Evokers are instantly set to fully charged.
+        else if (is_xp_evoker(item_to_charge))
         {
-            mprf("It has %d charges and is fully charged.", new_charges);
-            set_ident_flags(wand, ISFLAG_KNOW_PLUSES);
-        }
+            evoker_debt(item_to_charge.sub_type) = 0;
 
-        // Reinitialise zap counts.
-        wand.charges  = new_charges;
-        wand.used_count = ZAPCOUNT_RECHARGED;
+            if (item_to_charge.sub_type == MISC_LIGHTNING_ROD)
+                you.props["thunderbolt_charge"].get_int() = 0;
+
+            mprf("%s is fully charged.",
+                 item_to_charge.name(DESC_YOUR).c_str());
+        }
 
         you.wield_change = true;
         return 1;
