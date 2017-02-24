@@ -1,8 +1,8 @@
 %%%%
 Barachian
 
-Barachians are amphibious humanoids who rebelled against the gods. They're
-strong and can hop long distances, but are otherwise slow and are easily seen.
+Barachians are amphibious humanoids who rebelled against the gods. They're fast
+learners and can hop long distances, but are otherwise slow and easily seen.
 %%%%
 Centaur
 
