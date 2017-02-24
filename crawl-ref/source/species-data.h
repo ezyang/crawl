@@ -356,7 +356,7 @@ static const map<species_type, species_def> species_data =
     0, 0, 0, 3,
     MONS_BARACHIAN,
     HT_WATER, US_ALIVE, SIZE_MEDIUM,
-    10, 9, 8, // 27... the Good Number
+    9, 8, 7, // 24
     { STAT_STR, STAT_INT, STAT_DEX }, 4,
     { { MUT_SLOW, 1, 1 }, { MUT_HOP, 1, 1}, {MUT_HOP, 1, 13}, },
     { "Shadows flee at your approach. (+LOS)", "You can swim through water.", },
